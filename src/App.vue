@@ -1,15 +1,18 @@
 <template>
-  <div id="app"
-       v-loading="loading"
-       element-loading-text="Получение данных..."
-  >
+  <div id="app">
     <h1>Table UI</h1>
     <span class="buttons">
-      <el-button @click="getProductsHandler" title="Получить данные" icon="el-icon-refresh"></el-button>
+      <el-button
+              @click="getProductsHandler"
+              title="Получить данные"
+              icon="el-icon-refresh"
+              :disabled="loading"
+      >
+      </el-button>
     </span>
     <TableComponent
-            v-if="tableData && tableData.length"
-            :data="tableData"/>
+            v-if="productsList && productsList.length"
+            :data="productsList"/>
   </div>
 </template>
 
@@ -21,7 +24,6 @@ export default {
   name: 'App',
   data() {
     return {
-      tableData: [],
       loading: false,
     }
   },
@@ -37,14 +39,13 @@ export default {
             message: `Получено позиций: ${data.length}`,
             type: 'success'
           })
-          this.tableData = [...data]
+          this.$store.commit('setProducts', data)
         } else {
           this.$message({
             message: 'Получено 0 позиций',
             type: 'warning'
           })
         }
-
       }).catch(({error}) => {
         console.log(error)
         this.$notify({
@@ -60,6 +61,11 @@ export default {
   },
   created() {
     this.getProductsHandler()
+  },
+  computed: {
+    productsList() {
+      return this.$store.getters.getProductsList(20,0)
+    }
   }
 }
 </script>
