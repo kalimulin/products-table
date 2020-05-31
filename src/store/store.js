@@ -14,7 +14,7 @@ export default new Vuex.Store({
   },
   getters: {
     getProductsList: state => (count = 20, offset = 0) => {
-      return state.products.slice(offset, count);
+      return state.products.slice(offset, count+offset);
     }
   }
 })

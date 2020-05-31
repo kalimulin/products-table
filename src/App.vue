@@ -25,6 +25,8 @@ export default {
   data() {
     return {
       loading: false,
+      tableCount: 20,
+      tableOffset: 0,
     }
   },
   components: {
@@ -64,7 +66,7 @@ export default {
   },
   computed: {
     productsList() {
-      return this.$store.getters.getProductsList(20,0)
+      return this.$store.getters.getProductsList(this.tableCount,this.tableOffset)
     }
   }
 }
