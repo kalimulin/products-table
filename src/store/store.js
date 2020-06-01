@@ -13,8 +13,18 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    getProductsList: state => (count = 20, offset = 0) => {
-      return state.products.slice(offset, count+offset);
+    getProductsList: state => (prop = 'product', order = 'ascending', count = 10, offset = 0) => {
+      const products = [...state.products]
+      products.sort((a,b) => {
+        if (a[prop] > b[prop]) {
+          return order === 'ascending' ? 1 : -1
+        } else if ((a[prop] < b[prop])) {
+          return order === 'ascending' ? -1 : 1
+        } else {
+          return 0
+        }
+      })
+      return products.slice(offset, count+offset);
     }
-  }
+  },
 })

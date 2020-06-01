@@ -10,11 +10,29 @@
       >
       </el-button>
     </span>
+    <hr style="background-color: #EDEDED;height: 1px;border-width: 0;">
+    <div class="controls">
+      <el-row>
+        <el-col :span="12">
+          <div class="set-sorting">
+            <span>Sorting by:</span>
+            <el-button
+                    v-for="column in tableColumns"
+                    :key="column.prop"
+                    :type="column.prop === sortBy ? 'primary' : 'text'"
+                    @click="setSorting(column.prop)"
+            >{{column.label}}</el-button>
+          </div>
+        </el-col>
+        <el-col :span="12">{{sortBy}}</el-col>
+      </el-row>
+    </div>
     <TableComponent
             v-if="productsList && productsList.length"
             :data="productsList"
-            :columns="tableColumns"
-            sort-by="product"
+            :columns="sortedColumns"
+            :sort-by="sortBy"
+            @sortColumn="sortColumn"
     />
   </div>
 </template>
@@ -28,6 +46,8 @@ export default {
   data() {
     return {
       loading: false,
+      sortBy: 'product',
+      sortOrder: 'ascending',
       tableCount: 20,
       tableOffset: 0,
       tableColumns: [
@@ -74,6 +94,12 @@ export default {
     TableComponent
   },
   methods: {
+    sortColumn(order) {
+      this.sortOrder = order
+    },
+    setSorting(prop) {
+      this.sortBy = prop
+    },
     getProductsHandler() {
       this.loading = true
       getProducts().then(data => {
@@ -90,10 +116,9 @@ export default {
           })
         }
       }).catch(({error}) => {
-        console.log(error)
         this.$notify({
-          title: 'Данные не получены',
-          message: 'Возникла ошибка получения данных',
+          title: 'Ошибка получения данных',
+          message: error,
           type: 'warning'
         })
       }).finally(() => {this.loading = false})
@@ -107,7 +132,14 @@ export default {
   },
   computed: {
     productsList() {
-      return this.$store.getters.getProductsList(this.tableCount,this.tableOffset)
+      return this.$store.getters.getProductsList(this.sortBy, this.sortOrder, this.tableCount,this.tableOffset)
+    },
+    sortedColumns() {
+      return [...this.tableColumns].sort((a,b) => {
+        if (a.prop === this.sortBy) { return -1 }
+        if (b.prop === this.sortBy) { return 1 }
+        return 0
+      })
     }
   }
 }
@@ -136,5 +168,13 @@ export default {
     position: absolute;
     right: 0;
     top: 0;
+  }
+  .set-sorting {
+    .el-button {
+      padding: 5px;
+    }
+    .el-button--text {
+      color: #3D374A;
+    }
   }
 </style>
