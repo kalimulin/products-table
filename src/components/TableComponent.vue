@@ -14,19 +14,19 @@
                         width="55">
                 </el-table-column>
                 <el-table-column
-                        :prop="columns[0].prop"
+                        :prop="sortedColumns[0].prop"
                         sortable="true"
-                        :label="columns[0].label"
-                        :width="columns[0].width"
+                        :label="sortedColumns[0].label"
+                        :width="sortedColumns[0].width"
                         :sort-orders="['ascending', 'descending']"
                 >
                 </el-table-column>
                 <template
-                        v-for="(column, $index) in columns"
+                        v-for="(column, $index) in sortedColumns"
                 >
                     <el-table-column
                             :key="column.prop"
-                            v-if="$index"
+                            v-if="$index && column.visible"
                             :prop="column.prop"
                             :label="column.label"
                             :width="column.width"
@@ -58,6 +58,18 @@
         this.$emit('sortColumn', order)
       }
     },
+    computed: {
+      sortedColumns() {
+        const columns = [...this.columns]
+        columns.sort((a,b) => {
+          console.log(a.prop, this.sortBy)
+          if (a.prop === this.sortBy) { return -1 }
+          if (b.prop === this.sortBy) { return 1 }
+          return 0
+        })
+        return columns
+      }
+    }
   }
 </script>
 

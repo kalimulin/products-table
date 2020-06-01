@@ -10,27 +10,42 @@
       >
       </el-button>
     </span>
-    <hr style="background-color: #EDEDED;height: 1px;border-width: 0;">
+    <el-divider></el-divider>
     <div class="controls">
       <el-row>
         <el-col :span="12">
           <div class="set-sorting">
             <span>Sorting by:</span>
             <el-button
-                    v-for="column in tableColumns"
+                    v-for="column in selectedColumns"
                     :key="column.prop"
                     :type="column.prop === sortBy ? 'primary' : 'text'"
                     @click="setSorting(column.prop)"
             >{{column.label}}</el-button>
           </div>
         </el-col>
-        <el-col :span="12">{{sortBy}}</el-col>
+        <el-col :span="12" style="text-align: right">
+          <el-dropdown size="small" :hide-on-click="false">
+            <el-button type="default" size="small">
+              {{`${selectedColumns.length} of ${tableColumns.length} columns selected`}}<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>
+                <el-checkbox checked @change="selectAllColumns">Select all</el-checkbox>
+              </el-dropdown-item>
+              <el-dropdown-item
+                      v-for="column in tableColumns"
+                      :key="column.prop"
+              ><el-checkbox v-model="column.visible">{{column.label}}</el-checkbox></el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </el-col>
       </el-row>
     </div>
     <TableComponent
             v-if="productsList && productsList.length"
             :data="productsList"
-            :columns="sortedColumns"
+            :columns="tableColumns"
             :sort-by="sortBy"
             @sortColumn="sortColumn"
     />
@@ -55,45 +70,54 @@ export default {
           label: 'Product(100g serving)',
           prop: 'product',
           sortable: false,
-          width: 250
+          width: 250,
+          visible: true
         },
         {
           label: 'Calories',
           prop: 'calories',
           sortable: false,
-          width: null
+          width: null,
+          visible: true
         },
         {
           label: 'Fat (g)',
           prop: 'fat',
           sortable: false,
-          width: null
+          width: null,
+          visible: true
         },
         {
           label: 'Carbs (g)',
           prop: 'carbs',
           sortable: false,
-          width: null
+          width: null,
+          visible: true
         },
         {
           label: 'Protein (g)',
           prop: 'protein',
           sortable: false,
-          width: null
+          width: null,
+          visible: true
         },
         {
           label: 'Iron (%)',
           prop: 'iron',
           sortable: false,
-          width: null
+          width: null,
+          visible: true
         },
-      ]
+      ],
     }
   },
   components: {
     TableComponent
   },
   methods: {
+    selectAllColumns(event) {
+      this.tableColumns = this.tableColumns.map(column => ({...column, visible: event}))
+    },
     sortColumn(order) {
       this.sortOrder = order
     },
@@ -134,12 +158,8 @@ export default {
     productsList() {
       return this.$store.getters.getProductsList(this.sortBy, this.sortOrder, this.tableCount,this.tableOffset)
     },
-    sortedColumns() {
-      return [...this.tableColumns].sort((a,b) => {
-        if (a.prop === this.sortBy) { return -1 }
-        if (b.prop === this.sortBy) { return 1 }
-        return 0
-      })
+    selectedColumns() {
+      return this.tableColumns.filter(column => column.visible)
     }
   }
 }
