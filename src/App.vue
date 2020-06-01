@@ -12,7 +12,10 @@
     </span>
     <TableComponent
             v-if="productsList && productsList.length"
-            :data="productsList"/>
+            :data="productsList"
+            :columns="tableColumns"
+            sort-by="product"
+    />
   </div>
 </template>
 
@@ -27,6 +30,44 @@ export default {
       loading: false,
       tableCount: 20,
       tableOffset: 0,
+      tableColumns: [
+        {
+          label: 'Product(100g serving)',
+          prop: 'product',
+          sortable: false,
+          width: 250
+        },
+        {
+          label: 'Calories',
+          prop: 'calories',
+          sortable: false,
+          width: null
+        },
+        {
+          label: 'Fat (g)',
+          prop: 'fat',
+          sortable: false,
+          width: null
+        },
+        {
+          label: 'Carbs (g)',
+          prop: 'carbs',
+          sortable: false,
+          width: null
+        },
+        {
+          label: 'Protein (g)',
+          prop: 'protein',
+          sortable: false,
+          width: null
+        },
+        {
+          label: 'Iron (%)',
+          prop: 'iron',
+          sortable: false,
+          width: null
+        },
+      ]
     }
   },
   components: {

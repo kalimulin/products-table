@@ -5,21 +5,23 @@
                     :data="data"
                     stripe
                     empty-text="Нет данных"
-                    style="width: 100%">
+                    style="width: 100%"
+                    @selection-change="handleSelectionChange"
+            >
                 <el-table-column
-                        prop="id"
-                        label="Id"
-                        width="180">
+                        type="selection"
+                        width="55">
                 </el-table-column>
                 <el-table-column
-                        prop="product"
-                        label="Product"
-                        width="180">
+                        v-for="column in columns"
+                        :key="column.prop"
+                        :prop="column.prop"
+                        :sortable="column.prop === sortBy"
+                        :label="column.label"
+                        :width="column.width"
+                >
                 </el-table-column>
-                <el-table-column
-                        prop="calories"
-                        label="Calories">
-                </el-table-column>
+
             </el-table>
         </template>
     </div>
@@ -29,7 +31,19 @@
   export default {
     name: 'TableComponent',
     props: {
-      data: Array
+      data: Array,
+      columns: Array,
+      sortBy: String
+    },
+    data() {
+      return {
+        multipleSelection: []
+      }
+    },
+    methods: {
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+      }
     }
   }
 </script>
