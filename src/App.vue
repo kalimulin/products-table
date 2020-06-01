@@ -36,79 +36,26 @@
               <el-dropdown-item
                       v-for="column in tableColumns"
                       :key="column.prop"
-              ><el-checkbox v-model="column.visible">{{column.label}}</el-checkbox></el-dropdown-item>
+              ><el-checkbox v-model="column.visible" @change="selectColumn(column, $event)">{{column.label}}</el-checkbox></el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-col>
       </el-row>
     </div>
-    <TableComponent
-            v-if="productsList && productsList.length"
-            :data="productsList"
-            :columns="tableColumns"
-            :sort-by="sortBy"
-            @sortColumn="sortColumn"
-    />
+    <TableComponent />
   </div>
 </template>
 
 <script>
 import TableComponent from './components/TableComponent.vue'
 import {deleteProducts, getProducts} from './api/request'
+import {mapGetters} from 'vuex'
 
 export default {
   name: 'App',
   data() {
     return {
       loading: false,
-      sortBy: 'product',
-      sortOrder: 'ascending',
-      tableCount: 20,
-      tableOffset: 0,
-      tableColumns: [
-        {
-          label: 'Product(100g serving)',
-          prop: 'product',
-          sortable: false,
-          width: 250,
-          visible: true
-        },
-        {
-          label: 'Calories',
-          prop: 'calories',
-          sortable: false,
-          width: null,
-          visible: true
-        },
-        {
-          label: 'Fat (g)',
-          prop: 'fat',
-          sortable: false,
-          width: null,
-          visible: true
-        },
-        {
-          label: 'Carbs (g)',
-          prop: 'carbs',
-          sortable: false,
-          width: null,
-          visible: true
-        },
-        {
-          label: 'Protein (g)',
-          prop: 'protein',
-          sortable: false,
-          width: null,
-          visible: true
-        },
-        {
-          label: 'Iron (%)',
-          prop: 'iron',
-          sortable: false,
-          width: null,
-          visible: true
-        },
-      ],
     }
   },
   components: {
@@ -116,13 +63,13 @@ export default {
   },
   methods: {
     selectAllColumns(event) {
-      this.tableColumns = this.tableColumns.map(column => ({...column, visible: event}))
+      this.$store.commit('selectAllColumns', event)
     },
-    sortColumn(order) {
-      this.sortOrder = order
+    selectColumn(column, event) {
+      this.$store.commit('selectColumn', {column, event})
     },
     setSorting(prop) {
-      this.sortBy = prop
+      this.$store.commit('setColumnSort', prop)
     },
     getProductsHandler() {
       this.loading = true
@@ -155,12 +102,11 @@ export default {
     this.getProductsHandler()
   },
   computed: {
-    productsList() {
-      return this.$store.getters.getProductsList(this.sortBy, this.sortOrder, this.tableCount,this.tableOffset)
-    },
-    selectedColumns() {
-      return this.tableColumns.filter(column => column.visible)
-    }
+    ...mapGetters({
+      sortBy: "getColumnSort",
+      selectedColumns: 'getSelectedColumns',
+      tableColumns: 'getTableColumns'
+    }),
   }
 }
 </script>
