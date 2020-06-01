@@ -25,7 +25,38 @@
           </div>
         </el-col>
         <el-col :span="12" style="text-align: right">
-          <el-dropdown size="small" :hide-on-click="false">
+          <el-dropdown size="small" @command="setCountPerPage">
+            <el-button type="default" size="small">
+              {{`${tableCount} per page`}}<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="10"><span>10 per page</span></el-dropdown-item>
+              <el-dropdown-item command="15"><span>15 per page</span></el-dropdown-item>
+              <el-dropdown-item command="20"><span>20 per page</span></el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <div class="pagination">
+            <div class="pagination-left">
+              <el-button
+                  size="small"
+                  type="default"
+                  icon="el-icon-arrow-left"
+                  :disabled="tablePage <= 1"
+                  @click="getPrevPage"
+              ></el-button>
+            </div>
+            <div class="pagination-info">{{`${tableOffset + 1}-${tableOffset + tableCount} of ${productsCount}`}}</div>
+            <div class="pagination-right">
+              <el-button
+                  size="small"
+                  type="default"
+                  icon="el-icon-arrow-right"
+                  :disabled="(tablePage + 1) * tableCount > productsCount"
+                  @click="getNextPage"
+              ></el-button>
+            </div>
+          </div>
+          <el-dropdown size="small" :hide-on-click="false" class="select-columns">
             <el-button type="default" size="small">
               {{`${selectedColumns.length} of ${tableColumns.length} columns selected`}}<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -62,6 +93,15 @@ export default {
     TableComponent
   },
   methods: {
+    getPrevPage() {
+      this.$store.commit('setTablePage', false)
+    },
+    getNextPage() {
+      this.$store.commit('setTablePage', true)
+    },
+    setCountPerPage(count) {
+      this.$store.commit('setCountPerPage', +count)
+    },
     selectAllColumns(event) {
       this.$store.commit('selectAllColumns', event)
     },
@@ -105,7 +145,11 @@ export default {
     ...mapGetters({
       sortBy: "getColumnSort",
       selectedColumns: 'getSelectedColumns',
-      tableColumns: 'getTableColumns'
+      tableColumns: 'getTableColumns',
+      tableCount: 'getTableCount',
+      tableOffset: 'getTableOffset',
+      productsCount: 'getProductsCount',
+      tablePage: 'getTablePage'
     }),
   }
 }
@@ -142,5 +186,19 @@ export default {
     .el-button--text {
       color: #3D374A;
     }
+  }
+  .pagination {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+    .pagination-info {
+      margin: auto 5px;
+    }
+    .el-button--small {
+      padding: 9px;
+    }
+  }
+  .select-columns {
+    margin-left: 10px;
   }
 </style>

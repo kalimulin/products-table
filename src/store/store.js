@@ -8,8 +8,8 @@ export default new Vuex.Store({
     products: [],
     columnSort: 'product',
     sortOrder: 'ascending',
+    tablePage: 1,
     tableCount: 10,
-    tableOffset: 0,
     tableColumns: [
       {
         label: 'Product(100g serving)',
@@ -56,6 +56,18 @@ export default new Vuex.Store({
     ],
   },
   mutations: {
+    setTablePage(state, action) {
+      if (action) {
+        const maxPage = Math.ceil(state.products.length / state.tableCount)
+        state.tablePage = maxPage >= (state.tablePage + 1) ? state.tablePage + 1 : maxPage
+      } else {
+        state.tablePage = (state.tablePage - 1) >= 1 ? state.tablePage - 1 : 1
+      }
+    },
+    setCountPerPage(state, count) {
+      state.tablePage = Math.floor(state.tablePage * (state.tableCount / count))
+      state.tableCount = count
+    },
     setSortOrder(state, order) {
       state.sortOrder = order
     },
@@ -85,11 +97,14 @@ export default new Vuex.Store({
     getSortOrder(state) {
       return state.sortOrder
     },
+    getTablePage(state) {
+      return state.tablePage
+    },
     getTableCount(state) {
       return state.tableCount
     },
     getTableOffset(state) {
-      return state.tableOffset
+      return (state.tablePage - 1) * state.tableCount
     },
     getColumnSort(state) {
       return state.columnSort
@@ -106,6 +121,9 @@ export default new Vuex.Store({
         }
       })
       return products.slice(offset, count+offset);
+    },
+    getProductsCount(state) {
+      return state.products.length
     }
   },
 })
