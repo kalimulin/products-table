@@ -71,7 +71,8 @@ export default new Vuex.Store({
     },
     setCountPerPage(state, count) {
       state.selectedItems = []
-      state.tablePage = Math.floor(state.tablePage * (state.tableCount / count))
+      const tablePage = Math.floor(state.tablePage * (state.tableCount / count))
+      state.tablePage = tablePage ? tablePage : 1
       state.tableCount = count
     },
     setSortOrder(state, order) {
