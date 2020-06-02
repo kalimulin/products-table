@@ -15,7 +15,7 @@
       <el-row>
         <el-col :span="12">
           <div class="set-sorting">
-            <span>Sorting by:</span>
+            <span style="margin-right: 5px; color: #3D374A; font-size: 14px; font-weight: 600;">Sorting by:</span>
             <el-button
                     v-for="column in selectedColumns"
                     :key="column.prop"
@@ -25,7 +25,13 @@
           </div>
         </el-col>
         <el-col :span="12" style="text-align: right">
-          <el-dropdown size="small" @command="setCountPerPage">
+          <el-button
+              type="danger"
+              size="small"
+              :disabled="!selectedItems || !selectedItems.length"
+              @click="deleteHandler"
+          >Delete</el-button>
+          <el-dropdown size="small" @command="setCountPerPage" class="set-count">
             <el-button type="default" size="small">
               {{`${tableCount} per page`}}<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -116,26 +122,46 @@ export default {
       getProducts().then(data => {
         if (data && data.length) {
           this.$message({
-            message: `Получено позиций: ${data.length}`,
+            message: `Recieved items: ${data.length}`,
             type: 'success'
           })
           this.$store.commit('setProducts', data)
         } else {
           this.$message({
-            message: 'Получено 0 позиций',
+            message: 'Recieved 0 items',
             type: 'warning'
           })
         }
       }).catch(({error}) => {
         this.$notify({
-          title: 'Ошибка получения данных',
+          title: 'Error',
           message: error,
           type: 'warning'
         })
       }).finally(() => {this.loading = false})
     },
-    deleteHandler(id) {
-      deleteProducts(id).then(data => { console.log(data) }).catch((err) => {console.log(err)})
+    deleteHandler() {
+      this.$confirm(`Ready to delete: ${this.selectedItems.length}. Continue?`, 'Delete items?', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        deleteProducts(this.selectedItems).then(({message}) => {
+          if (message === 'deleted') {
+            this.$message({
+              message: `Deleted items: ${this.selectedItems.length}`,
+              type: 'success'
+            })
+            this.$store.commit('deleteItems', this.selectedItems)
+          }
+        }).catch(({error}) => {
+          this.$notify({
+            title: 'Error',
+            message: error,
+            type: 'warning'
+          })
+        })
+      }).catch(() => {})
     }
   },
   created() {
@@ -149,7 +175,8 @@ export default {
       tableCount: 'getTableCount',
       tableOffset: 'getTableOffset',
       productsCount: 'getProductsCount',
-      tablePage: 'getTablePage'
+      tablePage: 'getTablePage',
+      selectedItems: 'getSelectedItems'
     }),
   }
 }
@@ -199,6 +226,9 @@ export default {
     }
   }
   .select-columns {
+    margin-left: 10px;
+  }
+  .set-count {
     margin-left: 10px;
   }
 </style>

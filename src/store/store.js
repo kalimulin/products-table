@@ -54,9 +54,14 @@ export default new Vuex.Store({
         visible: true
       },
     ],
+    selectedItems: []
   },
   mutations: {
+    setSelectedItems(state, items) {
+      state.selectedItems = [...items]
+    },
     setTablePage(state, action) {
+      state.selectedItems = []
       if (action) {
         const maxPage = Math.ceil(state.products.length / state.tableCount)
         state.tablePage = maxPage >= (state.tablePage + 1) ? state.tablePage + 1 : maxPage
@@ -65,29 +70,43 @@ export default new Vuex.Store({
       }
     },
     setCountPerPage(state, count) {
+      state.selectedItems = []
       state.tablePage = Math.floor(state.tablePage * (state.tableCount / count))
       state.tableCount = count
     },
     setSortOrder(state, order) {
+      state.selectedItems = []
       state.sortOrder = order
     },
     setProducts (state, data) {
       state.products = [...data]
     },
     setColumnSort(state, column) {
+      state.selectedItems = []
       state.columnSort = column
     },
     selectColumn(state, {column, event}) {
+      state.selectedItems = []
       const columns = [...state.tableColumns]
       const col = columns.find(i => i.prop === column.prop)
       col.visible = event
       state.tableColumns = columns
     },
     selectAllColumns(state, event) {
+      state.selectedItems = []
       state.tableColumns = state.tableColumns.map(col => ({...col, visible: event}))
     },
+    deleteItems(state, items) {
+      state.products = state.products.filter(product => {
+        return !items.find(i => i.id === product.id)
+      })
+      state.selectedItems = []
+    }
   },
   getters: {
+    getSelectedItems(state) {
+      return state.selectedItems
+    },
     getSelectedColumns(state) {
       return state.tableColumns.filter(column => column.visible)
     },

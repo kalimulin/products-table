@@ -34,14 +34,32 @@
               :width="column.width"
           ></el-table-column>
         </template>
+        <el-table-column label="">
+          <template slot-scope="scope">
+            <el-popconfirm
+                title="Are you sure you want to delete item?"
+                confirmButtonText="Ok"
+                cancelButtonText="Cancel"
+                @onConfirm="deleteHandler(scope.row)"
+            >
+              <el-button
+                  size="small" class="delete-item-button" type="text"
+                  icon="el-icon-delete" slot="reference">
+                Delete
+              </el-button>
+            </el-popconfirm>
+
+          </template>
+        </el-table-column>
       </el-table>
     </template>
-    <div v-else style="text-align: center">Нет данных</div>
+    <div v-else style="text-align: center">No data</div>
   </div>
 </template>
 
 <script>
   import {mapGetters} from 'vuex'
+  import {deleteProducts} from "../api/request";
   export default {
     name: 'TableComponent',
     data() {
@@ -50,11 +68,28 @@
       }
     },
     methods: {
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
+      handleSelectionChange(items) {
+        this.$store.commit('setSelectedItems', items)
       },
       sortColumn({order}) {
         this.$store.commit('setSortOrder', order)
+      },
+      deleteHandler(product) {
+        deleteProducts([product]).then(({message}) => {
+          if (message === 'deleted') {
+            this.$message({
+              message: 'Success!',
+              type: 'success'
+            })
+            this.$store.commit('deleteItems', [product])
+          }
+        }).catch(({error}) => {
+          this.$notify({
+            title: 'Error',
+            message: error,
+            type: 'warning'
+          })
+        })
       }
     },
     computed: {
@@ -63,7 +98,7 @@
         sortBy: 'getColumnSort',
         sortOrder: 'getSortOrder',
         tableCount: 'getTableCount',
-        tableOffset: 'getTableOffset'
+        tableOffset: 'getTableOffset',
       }),
       productsList() {
         return this.$store.getters.getProductsList(this.sortBy, this.sortOrder, this.tableCount,this.tableOffset)
@@ -86,5 +121,13 @@
 </script>
 
 <style lang="scss">
+  .delete-item-button {
+    display: none;
+    padding: 0;
+    color: #5B5E77;
+  }
+  .el-table__row:hover .delete-item-button {
+    display: block;
+  }
 
 </style>
