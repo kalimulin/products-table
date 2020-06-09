@@ -1,5 +1,5 @@
 <template>
-  <div class="table-component">
+  <div class="tableComponent">
     <template
         v-if="productsList && productsList.length"
     >
@@ -43,7 +43,7 @@
                 @onConfirm="deleteHandler(scope.row)"
             >
               <el-button
-                  size="small" class="delete-item-button" type="text"
+                  size="small" class="tableComponent__deleteItemButton" type="text"
                   icon="el-icon-delete" slot="reference">
                 Delete
               </el-button>
@@ -53,7 +53,7 @@
         </el-table-column>
       </el-table>
     </template>
-    <div v-else style="text-align: center">No data</div>
+    <div class="tableComponent__noData" v-else>No data</div>
   </div>
 </template>
 
@@ -121,13 +121,16 @@
 </script>
 
 <style lang="scss">
-  .delete-item-button {
+  .tableComponent__deleteItemButton {
     display: none;
     padding: 0;
     color: #5B5E77;
   }
-  .el-table__row:hover .delete-item-button {
+  .el-table__row:hover .tableComponent__deleteItemButton {
     display: block;
+  }
+  .tableComponent__noData {
+    text-align: center;
   }
 
 </style>

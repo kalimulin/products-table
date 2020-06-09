@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
+  <div class="tableUI">
     <h1>Table UI</h1>
-    <span class="buttons">
+    <span class="tableUI__buttons">
       <el-button
               @click="getProductsHandler"
               title="Получить данные"
@@ -11,10 +11,10 @@
       </el-button>
     </span>
     <el-divider></el-divider>
-    <div class="controls">
+    <div class="tableUI__controls">
       <el-row>
         <el-col :span="12">
-          <div class="set-sorting">
+          <div class="tableUI__setSorting">
             <span style="margin-right: 5px; color: #3D374A; font-size: 14px; font-weight: 600;">Sorting by:</span>
             <el-button
                     v-for="column in selectedColumns"
@@ -31,7 +31,7 @@
               :disabled="!selectedItems || !selectedItems.length"
               @click="deleteHandler"
           >Delete</el-button>
-          <el-dropdown size="small" @command="setCountPerPage" class="set-count">
+          <el-dropdown size="small" @command="setCountPerPage" class="tableUI__setCount">
             <el-button type="default" size="small">
               {{`${tableCount} per page`}}<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -41,7 +41,7 @@
               <el-dropdown-item command="20"><span>20 per page</span></el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-          <div class="pagination">
+          <div class="tableUI__pagination">
             <div class="pagination-left">
               <el-button
                   size="small"
@@ -62,7 +62,7 @@
               ></el-button>
             </div>
           </div>
-          <el-dropdown size="small" :hide-on-click="false" class="select-columns">
+          <el-dropdown size="small" :hide-on-click="false" class="tableUI__selectColumns">
             <el-button type="default" size="small">
               {{`${selectedColumns.length} of ${tableColumns.length} columns selected`}}<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -79,12 +79,12 @@
         </el-col>
       </el-row>
     </div>
-    <TableComponent />
+    <tableComponent />
   </div>
 </template>
 
 <script>
-import TableComponent from './components/TableComponent.vue'
+import tableComponent from './components/TableComponent.vue'
 import {deleteProducts, getProducts} from './api/request'
 import {mapGetters} from 'vuex'
 
@@ -96,7 +96,7 @@ export default {
     }
   },
   components: {
-    TableComponent
+    tableComponent
   },
   methods: {
     getPrevPage() {
@@ -198,15 +198,15 @@ export default {
     font-size: 32px;
     line-height: 40px;
   }
-  #app {
+  .tableUI {
     position: relative;
   }
-  span.buttons {
+  .tableUI__buttons {
     position: absolute;
     right: 0;
     top: 0;
   }
-  .set-sorting {
+  .tableUI__setSorting {
     .el-button {
       padding: 5px;
     }
@@ -214,7 +214,7 @@ export default {
       color: #3D374A;
     }
   }
-  .pagination {
+  .tableUI__pagination {
     display: inline-flex;
     align-items: center;
     margin-left: 10px;
@@ -225,10 +225,10 @@ export default {
       padding: 9px;
     }
   }
-  .select-columns {
+  .tableUI__selectColumns {
     margin-left: 10px;
   }
-  .set-count {
+  .tableUI__setCount {
     margin-left: 10px;
   }
 </style>
